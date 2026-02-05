@@ -42,25 +42,19 @@ Image_to_Cluster/ <br/>
 
 ## Pour lancer ce projet (instructions pour l’utilisateur)
 
-# Prérequis (une seule fois)
-
+Pour créer le cluster (si besoin), construire l’image, déployer et ouvrir l’accès, veuillez utiliser cette commande :
 ```bash
-# Créer le cluster de test
-k3d cluster create lab --servers 1 --agents 2
-```
-# Lancement complet en une seule ligne
-```bash
-make all && make forward
+make bootstrap
 ```
 
 Cela exécute successivement :
+- Création du cluster si besoin (make create-cluster)
 - Construction Packer (make build)
 - Import image dans k3d (make import)
 - Déploiement Ansible (make deploy)
+- Lancement du port-forward en arrière-plan (make forward)
 
-Puis lance le port-forward en arrière-plan.
-Accès à la page web
-
+Accès à la page web :
 Dans l’interface Codespaces → onglet PORTS (en bas)
 Port 8081 apparaît → clique sur le cadenas → Public
 Clique sur Open in Browser (ou sur l’URL proposée)
