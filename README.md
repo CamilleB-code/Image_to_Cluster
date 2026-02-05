@@ -40,9 +40,9 @@ Image_to_Cluster/ <br/>
 5. Accès sécurisé via port-forward dans Codespaces
 6. Automatisation complète via Makefile
 
-## Pour lancer ce projet (instructions pour l’utilisateur / correcteur)
+## Pour lancer ce projet (instructions pour l’utilisateur)
 
-## Prérequis (une seule fois)
+# Prérequis (une seule fois)
 
 ```bash
 # Installer k3d (si pas déjà fait)
@@ -51,7 +51,7 @@ curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
 # Créer le cluster de test
 k3d cluster create lab --servers 1 --agents 2
 ```
-## Lancement complet en une seule ligne
+# Lancement complet en une seule ligne
 ```bash
 make all && make forward
 ```
