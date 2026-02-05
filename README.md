@@ -45,9 +45,6 @@ Image_to_Cluster/ <br/>
 # Prérequis (une seule fois)
 
 ```bash
-# Installer k3d (si pas déjà fait)
-curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
-
 # Créer le cluster de test
 k3d cluster create lab --servers 1 --agents 2
 ```
