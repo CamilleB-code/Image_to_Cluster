@@ -1,67 +1,79 @@
-Etapes détaillées du travail réalisé 
+# Étapes détaillées du travail réalisé – 05/02/2026
 
-La mission (acceptée) : Créez une **image applicative customisée à l'aide de Packer** (Image de base Nginx embarquant le fichier index.html présent à la racine de ce Repository), puis déployer cette image customisée sur votre **cluster K3d** via **Ansible**, le tout toujours dans **GitHub Codespace**.  
+## Mission acceptée
 
-**Architecture cible :** Ci-dessous, l'architecture cible souhaitée.   
-  
-![Screenshot Actions](Architecture_cible.png)   
-  
----------------------------------------------------  
-###Les objectifs de la mission 
-Cet atelier vise à industrialiser le cycle de vie d'une application web simple en passant par :
-- Création d'une image Docker customisée (Nginx + index.html personnel) avec **Packer**
-- Import de l'image dans un cluster Kubernetes local (**k3d**)
-- Déploiement automatisé sur le cluster via **Ansible**
-- Le tout dans un environnement reproductible : **GitHub Codespaces**
+Créer une **image applicative customisée** à l’aide de **Packer**  
+(Image de base : nginx:alpine + fichier `index.html` présent à la racine du repository)  
 
-L'idée est de maîtriser une chaîne IaC (Infrastructure as Code) complète : build d'image → import → déploiement.
+Puis **déployer** cette image customisée sur un **cluster k3d** via **Ansible**,  
+le tout réalisé dans **GitHub Codespaces**.
 
-Image_to_Cluster/
-├── index.html                  # La page web personnalisée
-├── nginx-custom.pkr.hcl        # Template Packer pour construire l'image Nginx custom
-├── deploy-nginx.yaml           # Playbook Ansible pour déployer sur k3d
-├── k8s/
-│   ├── deployment.yaml         # Manifest Deployment
-│   └── service.yaml            # Manifest Service NodePort
-├── Makefile                    # Automatisation des étapes (bonus)
-└── README.md                   # Ce fichier
+**Architecture cible**  
+![Architecture cible](Architecture_cible.png)
 
-###Travail réalisé
+## Objectifs de l’atelier
 
-1. Créer le cluster k3d
-2. Construire l'image avec Packer
-3. Importer l'image dans le cluster k3d
-4. Déployer l'application avec Ansible
-5. Accéder à l'application
-6. Vérification du bon fonctionnement
-7. Automatisation du déploiement avec Makefile
+Industrialiser le cycle de vie d’une application web simple via une chaîne IaC complète :
 
----------------------------------------------------
+- Build d’image applicative → **Packer**
+- Import dans cluster Kubernetes local → **k3d**
+- Déploiement automatisé → **Ansible**
+- Environnement reproductible → **GitHub Codespaces**
 
-###Pour lancer ce projet 
+## Arborescence finale du projet
+Image_to_Cluster/ <br/>
+├── index.html                  # Page web personnalisée <br/>
+├── nginx-custom.pkr.hcl        # Template Packer <br/>
+├── deploy-nginx.yaml           # Playbook Ansible<br/>
+├── k8s/<br/>
+│   ├── deployment.yaml         # Manifest Deployment (avec probes + resources)<br/>
+│   └── service.yaml            # Manifest Service NodePort<br/>
+├── Makefile                    # Automatisation complète <br/>
+└── README.md                   # Documentation<br/>
 
-1. Prérequis (à faire qu'une seule fois)
-# Installer k3d si pas déjà fait
-curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
+## Travail réalisé – étapes chronologiques
 
-# Créer le cluster (peut être refait si besoin)
+1. Création du cluster k3d léger (1 serveur + 2 agents)  
+2. Construction de l’image customisée avec Packer    
+3. Import de l’image dans le cluster k3d  
+4. Déploiement via Ansible (Deployment + Service)    
+5. Accès sécurisé via port-forward dans Codespaces
+6. Automatisation complète via Makefile
+
+## Pour lancer ce projet (instructions pour l’utilisateur)
+
+# Prérequis (une seule fois)
+
+```bash
+# Créer le cluster de test
 k3d cluster create lab --servers 1 --agents 2
-
-2. Lancer le programme en une seule commande  et accéder à la page associée ensuite : 
+```
+# Lancement complet en une seule ligne
+```bash
 make all && make forward
+```
 
-Cela va automatiquement :
-- construire une image
-- importer cette image dans le cluster 
-- déployer le Deployment et Service
+Cela exécute successivement :
+- Construction Packer (make build)
+- Import image dans k3d (make import)
+- Déploiement Ansible (make deploy)
 
-Puis via l'onglet PORTS de Codespaces, vous pouvez accéder à la page web associée (Open in Browser).
+Puis lance le port-forward en arrière-plan.
+Accès à la page web
 
-Autres commandes utiles : 
-make help          # Affiche la liste complète des commandes
-make build         # Seulement construire l’image Packer
-make import        # Seulement importer l’image dans k3d
-make deploy        # Seulement déployer avec Ansible
-make test          # Vérifier rapidement pods + services
-make clean         # Supprimer le déploiement (pods + service)
-make stop-forward  # Arrêter le port-forward si besoin
+Dans l’interface Codespaces → onglet PORTS (en bas)
+Port 8081 apparaît → clique sur le cadenas → Public
+Clique sur Open in Browser (ou sur l’URL proposée)
+
+→ La page index.html personnalisée s’affiche.
+
+### Commandes utiles du Makefile
+```
+make help           # Liste toutes les commandes disponibles
+make all            # Build + import + deploy 
+make forward        # Lancer port-forward (8081:80)
+make clean          # Supprimer Deployment + Service 
+make test           # Vérifier état pods / services
+make build          # Rebuild image Packer (utile après modif index.html)
+make stop-forward   # Arrêter port-forwards en cours
+```
