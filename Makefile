@@ -5,7 +5,25 @@ CLUSTER_NAME = lab
 NAMESPACE = default
 PORT_FORWARD = 8081:80
 
-.PHONY: all build import deploy clean test access forward stop-forward help
+# Vérifie si le cluster existe déjà, sinon le crée
+create-cluster: ## Crée le cluster k3d uniquement s'il n'existe pas
+	@if k3d cluster list | grep -q "^$(CLUSTER_NAME) "; then \
+		echo "Cluster '$(CLUSTER_NAME)' existe déjà → on passe à la suite"; \
+	else \
+		echo "Cluster '$(CLUSTER_NAME)' introuvable → création en cours..."; \
+		k3d cluster create $(CLUSTER_NAME) --servers 1 --agents 2; \
+		echo "Cluster créé avec succès !"; \
+	fi
+
+# Optionnel : cible pour tout installer + créer cluster + déployer
+bootstrap: create-cluster all forward ## Tout en une commande : deps + cluster + build + deploy + forward
+	@echo ""
+	@echo "===================================================================="
+	@echo " Tout est prêt !"
+	@echo "  → Va dans l'onglet PORTS de Codespaces"
+	@echo "  → Port 8081 → rends-le Public (cadenas)"
+	@echo "  → Clique sur Open in Browser"
+	@echo "===================================================================="
 
 all: build import deploy ## Tout faire : build + import + deploy
 
@@ -41,3 +59,5 @@ stop-forward: ## Arrête tous les port-forwards
 
 help: ## Affiche cette aide
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+
+
